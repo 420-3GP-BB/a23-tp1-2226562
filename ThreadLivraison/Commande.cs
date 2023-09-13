@@ -43,7 +43,7 @@ namespace ThreadLivraison
 
         public string ToString()
         {
-            return $"Commande #{Numero} ==> Temps de préparation : {Utilitaires.Utilitaires.calculerTemps((int)(TempsPreparation * FACTEUR_ACCELERATION))}, Destination : {Destination.ToString()}, Temps Livraison : {Utilitaires.Utilitaires.calculerTemps(TempsLivraison)} ";
+            return $"Commande #{Numero} ==> Temps de préparation : {Utilitaires.Utilitaires.calculerTemps((int)(TempsPreparation * FACTEUR_ACCELERATION))}, Destination : {Destination.ToString()}";
         }
     }
         
