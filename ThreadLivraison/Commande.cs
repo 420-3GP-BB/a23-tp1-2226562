@@ -16,6 +16,12 @@ namespace ThreadLivraison
             set;
         }
 
+        public bool EstTraitée
+        {
+            get;
+            set;
+        }
+ 
         public Position Destination
         {
             get;
@@ -33,12 +39,13 @@ namespace ThreadLivraison
             get;
             set;
         }
-        public Commande(int numero, Position destination, int tempsPrep, int tempsLiv)
+        public Commande(int numero, Position destination, int tempsPrep, int tempsLiv, bool estTraitée)
         {
             Numero = numero;
             Destination = destination;
             TempsPreparation = tempsPrep;
             TempsLivraison = tempsLiv;
+            EstTraitée = estTraitée;
         }
 
         public string ToString()
