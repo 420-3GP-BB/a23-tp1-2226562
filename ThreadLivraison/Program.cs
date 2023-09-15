@@ -2,34 +2,38 @@
 using static ThreadLivraison.ConstantesSimulation;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 Random random = new Random();
 int delaiCommande = random.Next(DELAI_MINIMUM_COMMANDE, DELAI_MAXIMUM_COMMANDE);
 ConcurrentQueue <Commande> lesCommandes = new ConcurrentQueue<Commande>();
+ConcurrentQueue<Commande> lesCommandesPrepare = new ConcurrentQueue<Commande>();
+ConcurrentQueue<Commande> lesCommandesLivre = new ConcurrentQueue<Commande>();
+
+Stopwatch sw = new Stopwatch();
+string tempsTravail; 
+
+sw.Start();
+Console.WriteLine("La pizzeria est ouverte");
 
 Thread threadCommande = new Thread(new ThreadStart(creerCommandes));
 threadCommande.Start();
 
 
 Thread[] cuisiniers = new Thread[NOMBRE_CUISINIERS];
-Console.WriteLine(threadCommande.IsAlive);
-
-
-for(int i = 0; i < NOMBRE_CUISINIERS; i++)
+for (int i = 0; i < NOMBRE_CUISINIERS; i++)
 {
-    cuisiniers[i] = new Thread(new ParameterizedThreadStart (traiterCommande));
+    cuisiniers[i] = new Thread(new ParameterizedThreadStart(traiterCommande));
 }
 
-
-for (int i = 0; i<NOMBRE_CUISINIERS; i++)
+for (int i = 0; i < NOMBRE_CUISINIERS; i++)
 {
     cuisiniers[i].Start(i);
 }
 
-
 Thread[] livreurs = new Thread[NOMBRE_LIVREURS];
 
-
+//Console.WriteLine($"Temps de travail : {Utilitaires.Utilitaires.calculerTemps((int)((sw.ElapsedMilliseconds) * FACTEUR_ACCELERATION))}");
 
 void creerCommandes()
 {
@@ -45,26 +49,44 @@ void creerCommandes()
         Commande nouvelleCommande = new Commande(i + 1, new Position(positionX, positionY), tempsPreparation, tempsLivraison, false);
         Console.WriteLine(nouvelleCommande.ToString());
         lesCommandes.Enqueue(nouvelleCommande);
-       
+    
     }
 }
 
 void traiterCommande(object? valeur)
 {
-    
-    Console.WriteLine("Siuuu");
-    foreach (Commande cmd in lesCommandes)
+    while (threadCommande.IsAlive == true || lesCommandes.IsEmpty == false)
     {
-        if(cmd.EstTraitée == false)
+        Commande uneCommande;
+        int tempsPreparation = 0;
+
+        if (lesCommandes.TryDequeue(out uneCommande))
         {
-            Console.WriteLine($"Le cuisinier #{((int)(valeur)+1)} traite la commande #{cmd.Numero}");
-            Thread.Sleep (cmd.TempsPreparation);
-            Console.WriteLine($"Le cuisinier #{((int)(valeur) + 1)} a traité la commande #{cmd.Numero}");
-            cmd.EstTraitée = true;
+            tempsPreparation = uneCommande.TempsPreparation;
+            Thread.Sleep(tempsPreparation);
+            Console.WriteLine($"Le cuisinier #{((int)(valeur) + 1)} commence la commande #{uneCommande.Numero} {Utilitaires.Utilitaires.calculerTemps((int)(uneCommande.TempsPreparation * FACTEUR_ACCELERATION))}");
+            Thread.Sleep(uneCommande.TempsPreparation);
+            Console.WriteLine($"Le cuisinier #{((int)(valeur) + 1)} a terminé la commande #{uneCommande.Numero}");
+            lesCommandesPrepare.Enqueue(uneCommande);
         }
+        else
+        {
+            Console.WriteLine("Aucune commande à traiter");
+            Thread.Sleep(1000);
+        }
+
         
     }
+    
+}
 
+static void afficherCommande(ConcurrentQueue<Commande> commandes)
+{
+    Console.WriteLine("Les commandes prepare sont : ");
+    foreach(Commande c in commandes)
+    {
+        Console.WriteLine(c.ToString());
+    }
 }
 
 

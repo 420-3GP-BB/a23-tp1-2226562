@@ -4,7 +4,7 @@
     // Le nombre de commandes, de cuisinier et de livreurs est aussi modifiable.
     public static class ConstantesSimulation
     {
-        public const double FACTEUR_ACCELERATION = 1800;
+        public const double FACTEUR_ACCELERATION = 200;
         public const double MILLIS_PAR_MINUTE = 60000.0 / FACTEUR_ACCELERATION;
 
         // Délai entre chaque commande (au téléphone)
@@ -28,8 +28,8 @@
         public const int DISTANCE_MAXIMALE_LIVRAISON = 10;
 
         // Nombre propres à la simulation
-        public const int NOMBRE_COMMANDES = 80;
-        public const int NOMBRE_CUISINIERS = 3;
-        public const int NOMBRE_LIVREURS = 4;
+        public const int NOMBRE_COMMANDES = 1;
+        public const int NOMBRE_CUISINIERS = 1;
+        public const int NOMBRE_LIVREURS = 1;
     }
 }
