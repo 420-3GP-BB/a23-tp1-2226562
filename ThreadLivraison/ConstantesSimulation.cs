@@ -28,8 +28,8 @@
         public const int DISTANCE_MAXIMALE_LIVRAISON = 10;
 
         // Nombre propres à la simulation
-        public const int NOMBRE_COMMANDES = 1;
-        public const int NOMBRE_CUISINIERS = 1;
-        public const int NOMBRE_LIVREURS = 1;
+        public const int NOMBRE_COMMANDES = 7;
+        public const int NOMBRE_CUISINIERS = 3;
+        public const int NOMBRE_LIVREURS = 3;
     }
 }

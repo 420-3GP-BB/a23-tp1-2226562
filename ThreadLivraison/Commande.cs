@@ -11,6 +11,7 @@ namespace ThreadLivraison
 {
     internal class Commande
     {
+
         public int Numero
         {
             get;
@@ -27,6 +28,8 @@ namespace ThreadLivraison
             get;
             set;
         }
+
+
 
         public Position Destination
         {
@@ -61,7 +64,7 @@ namespace ThreadLivraison
             EstTraitée = estTraitée;
             EstLivrée = estLivrée;
             Stopwatch = sw;
-            sw.Restart();
+            sw.Start();
 
         }
 
