@@ -8,6 +8,16 @@
             return ts.ToString(@"hh\:mm\:ss");
         }
 
+        public static int calculerPosition(int x, int y)
+        {
+            return Math.Abs(x) + Math.Abs(y);
+        }
+
+        public static int calculerDistance(int depart, int arrive)
+        {
+            return (arrive - depart);
+        }
+
 
 
     }

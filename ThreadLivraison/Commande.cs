@@ -11,6 +11,16 @@ namespace ThreadLivraison
 {
     internal class Commande
     {
+        private bool _estLivree;
+        private Stopwatch _stopwatch;
+        public static int tempsLivraisonGlobal = 0;
+
+        public void setEstLivree(bool estLivree)
+        {
+            _estLivree = estLivree;
+            _stopwatch.Stop();
+            
+        }
 
         public int Numero
         {
@@ -18,12 +28,12 @@ namespace ThreadLivraison
             set;
         }
 
-        public bool EstTraitée
+        public bool EstTraitee
         {
             get;
             set;
         }
-        public bool EstLivrée
+        public bool EstLivree
         {
             get;
             set;
@@ -60,11 +70,15 @@ namespace ThreadLivraison
             Numero = numero;
             Destination = destination;
             TempsPreparation = tempsPrep;
-            TempsLivraison = (int)(sw.ElapsedMilliseconds * FACTEUR_ACCELERATION);
-            EstTraitée = estTraitée;
-            EstLivrée = estLivrée;
-            Stopwatch = sw;
+            _stopwatch = sw;
+            TempsLivraison++;
+            //TempsLivraison = (int)(sw.ElapsedMilliseconds * FACTEUR_ACCELERATION);
+            EstTraitee = estTraitée;
+            EstLivree = estLivrée;
             sw.Start();
+
+            tempsLivraisonGlobal += TempsLivraison;
+            
 
         }
 
