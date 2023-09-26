@@ -18,8 +18,14 @@ namespace ThreadLivraison
         public void setEstLivree(bool estLivree)
         {
             _estLivree = estLivree;
+            tempsLivraisonGlobal += TempsLivraison;
             _stopwatch.Stop();
             
+        }
+
+        public bool getEstLivree()
+        {
+            return _estLivree;
         }
 
         public int Numero
@@ -29,11 +35,6 @@ namespace ThreadLivraison
         }
 
         public bool EstTraitee
-        {
-            get;
-            set;
-        }
-        public bool EstLivree
         {
             get;
             set;
@@ -55,31 +56,22 @@ namespace ThreadLivraison
 
         public int TempsLivraison
         {
-            get;
-            set;
+            get
+            {
+                return (int)(_stopwatch.ElapsedMilliseconds * FACTEUR_ACCELERATION);
+            }
         }
 
-        public Stopwatch Stopwatch
-        {
-            get;
-            set;
-        }
+        
 
-        public Commande(int numero, Position destination, int tempsPrep, int tempsLiv, bool estTraitée, bool estLivrée, Stopwatch sw)
+        public Commande(int numero, Position destination, int tempsPrep, Stopwatch sw)
         {
             Numero = numero;
             Destination = destination;
             TempsPreparation = tempsPrep;
             _stopwatch = sw;
-            TempsLivraison++;
-            //TempsLivraison = (int)(sw.ElapsedMilliseconds * FACTEUR_ACCELERATION);
-            EstTraitee = estTraitée;
-            EstLivree = estLivrée;
             sw.Start();
-
-            tempsLivraisonGlobal += TempsLivraison;
             
-
         }
 
         public string ToString()

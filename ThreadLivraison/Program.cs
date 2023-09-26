@@ -52,63 +52,68 @@ afficherStats();
 void livrerCommande(object? valeurObjet)
 {
     
-        int distance = 0;
-        int dureeDistance = 0;
-        int valeur = (int)valeurObjet;
-        List<Commande> livraisons = new List<Commande>();
-        while (!verifierCuisiniersMorts() || !commandesPrepares.estVide())
+    int dureeDistance = 0;
+    int valeur = (int)valeurObjet;
+    int distanceRetour = 0;
+    List<Commande> livraisons = new List<Commande>();
+    while (!verifierCuisiniersMorts() || !commandesPrepares.estVide())
+    {
+        livraisons = commandesPrepares.obtenirCommande();
+        if (livraisons.Count == 0)
         {
-            for (int j = 0; j < commandesPrepares.length(); j++)
+            Thread.Sleep(1);
+        }
+        else
+        {
+            Console.WriteLine($"Le livreur #{(valeur + 1)} va livré les commandes : ");
+            afficherCommandeLivree(livraisons);
+            for (int i = 0; i < livraisons.Count; i++)
             {
-                if (commandesPrepares.GetCommandes()[j].EstLivree == false)
+                Console.WriteLine($"Le livreur #{(valeur + 1)} va livre la commande : #{livraisons[i].Numero}");
+                if (i == 0)
                 {
-                    livraisons = commandesPrepares.obtenirCommande(commandesPrepares.GetCommandes()[j]);
-                    Console.WriteLine($"Le livreur #{(valeur + 1)} va livré les commandes : ");
-                    afficherCommandeLivree(livraisons);
-                    for (int i = 0; i < livraisons.Count; i++)
-                    {
-                        Console.WriteLine($"Le livreur #{(valeur + 1)} va livre la commande : #{livraisons[i].Numero}");
-                        dureeDistance = (Utilitaires.Utilitaires.calculerPosition(livraisons[i].Destination.X, livraisons[i].Destination.Y) * TEMPS_DEPLACEMENT) + TEMPS_PAIEMENT;
-
-                        Thread.Sleep(dureeDistance);
-                        livraisons[i].EstLivree = true;
-                        Console.WriteLine($"Le livreur #{(valeur + 1)} a livré la commande : #{livraisons[i].Numero}. Temps : {livraisons[i].TempsLivraison}");
-                        if (livraisons[i].TempsLivraison > QUARANTE_CINQ_MINUTES_EN_MILI)
-                        {
-                            livraisonsHorsDelai++;
-                        }
-
-                        livraisons.Remove(livraisons[i]);
-                    }
-                    Thread.Sleep(dureeDistance);
-
-                    Console.WriteLine($"Le livreur #{(valeur + 1)} est de retour à la pizzeria");
-                    }
-                    
-                //}
+                    dureeDistance = (Utilitaires.Utilitaires.calculerPosition(livraisons[i].Destination.X, livraisons[i].Destination.Y) * TEMPS_DEPLACEMENT) + TEMPS_PAIEMENT;
+                }
                 else
                 {
-                    Thread.Sleep(1);
+                    dureeDistance = (Math.Abs(livraisons[i].Destination.X - livraisons[i].Destination.X) + Math.Abs(livraisons[0].Destination.Y - livraisons[i].Destination.Y) * TEMPS_DEPLACEMENT) + TEMPS_PAIEMENT;
                 }
-
+                Thread.Sleep((int)(dureeDistance));
+                livraisons[i].setEstLivree(true);
+                Console.WriteLine($"Le livreur #{(valeur + 1)} a livré la commande : #{livraisons[i].Numero}. Temps : {Utilitaires.Utilitaires.calculerTemps(livraisons[i].TempsLivraison)}");
+                if (livraisons[i].TempsLivraison > QUARANTE_CINQ_MINUTES_EN_MILI)
+                {
+                    livraisonsHorsDelai++;
+                }
+                if(i == livraisons.Count - 1)
+                {
+                    distanceRetour = (Utilitaires.Utilitaires.calculerPosition(livraisons[livraisons.Count - 1].Destination.X, livraisons[livraisons.Count - 1].Destination.Y) * TEMPS_DEPLACEMENT);
+                }
             }
+            for (int k = 0; k < livraisons.Count; k++)
+            {
+                livraisons.Remove(livraisons[k]);
+            }
+
+            Thread.Sleep((int)(distanceRetour));
+
+            Console.WriteLine($"Le livreur #{(valeur + 1)} est de retour à la pizzeria");
         }
-    
-        
-        
     }
+}
+    
+   
+
 void creerCommandes()
 {
 
     for (int i = 0; i < NOMBRE_COMMANDES; i++)
     {
         int tempsPreparation = random.Next(TEMPS_MINIMUM_PREPARATION, TEMPS_MAXIMUM_PREPARATION);
-        int tempsLivraison = 1000;
         int positionX = random.Next(-10, 11);
         int positionY = random.Next(-10, 11);
-
-        Thread.Sleep(delaiCommande);
-        Commande nouvelleCommande = new Commande(i + 1, new Position(positionX, positionY), tempsPreparation, tempsLivraison, false, false, new Stopwatch());
+        Thread.Sleep((int)(delaiCommande));
+        Commande nouvelleCommande = new Commande(i + 1, new Position(positionX, positionY), tempsPreparation, new Stopwatch());
         Console.WriteLine(nouvelleCommande.ToString());
         lesCommandes.Enqueue(nouvelleCommande);
 
@@ -123,17 +128,14 @@ void traiterCommande(object? valeur)
 
         if (lesCommandes.TryDequeue(out uneCommande))
         {
-            tempsPreparation = uneCommande.TempsPreparation;
-            Thread.Sleep(tempsPreparation);
             Console.WriteLine($"Le cuisinier #{((int)(valeur) + 1)} commence la commande #{uneCommande.Numero} {Utilitaires.Utilitaires.calculerTemps((int)(uneCommande.TempsPreparation * FACTEUR_ACCELERATION))}");
-            Thread.Sleep(uneCommande.TempsPreparation);
+            Thread.Sleep((int)(uneCommande.TempsPreparation));
             Console.WriteLine($"Le cuisinier #{((int)(valeur) + 1)} a terminé la commande #{uneCommande.Numero}");
             commandesPrepares.Ajouter(uneCommande);
         }
         else
         {
-            Console.WriteLine("Aucune commande à traiter");
-            Thread.Sleep(1000);
+            Thread.Sleep(1);
         }
 
 
@@ -144,7 +146,7 @@ void afficherCommandeLivree(List<Commande> cmd)
 {
     foreach (Commande c in cmd)
     {
-        Console.WriteLine($"\t{c.Numero} à {c.Destination}");
+        Console.WriteLine($"           #{c.Numero} à {c.Destination}");
     }
 }
 
@@ -154,13 +156,20 @@ void afficherStats()
     {
         if (verifierLivreursMorts())
         {
+            Console.WriteLine($"Temps d'attente moyen : {calculerTempsAttenteMoyen()}");
             Console.WriteLine($"Temps d'exécution : {Utilitaires.Utilitaires.calculerTemps((int)((chronoTravail.ElapsedMilliseconds) * FACTEUR_ACCELERATION))}");
             Console.WriteLine($"Nombre de commandes hors délai : {livraisonsHorsDelai}");
-            Console.WriteLine($"Temps d'attente moyen : {Commande.tempsLivraisonGlobal}");
             break;
         }
     }
 }
+
+string calculerTempsAttenteMoyen()
+{
+    return Utilitaires.Utilitaires.calculerTemps((int)((Commande.tempsLivraisonGlobal / NOMBRE_COMMANDES)));
+}
+
+
 
 bool verifierCuisiniersMorts()
 {

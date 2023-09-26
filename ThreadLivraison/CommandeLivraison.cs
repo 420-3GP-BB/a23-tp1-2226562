@@ -22,7 +22,7 @@ namespace ThreadLivraison
 
         public bool estVide()
         {
-            lock (this)
+            lock (_lock)
             {
                 return (_commandes.Count == 0);
             }
@@ -30,52 +30,64 @@ namespace ThreadLivraison
 
         public List<Commande> GetCommandes()
         {
-            return _commandes;
+            lock (_lock)
+            {
+                return _commandes;
+
+            }
         }
 
         public void SetCommandes(List<Commande> commandes)
         {
-            _commandes = commandes;
+            lock ( _lock)
+            {
+                _commandes = commandes;
+            }
+           
         }
 
         public int length()
         {
-            return _commandes.Count;
+            lock(_lock)
+            {
+                return _commandes.Count;
+            }
+            
         }
-        public List<Commande> obtenirCommande(Commande uneCommande)
+        public List<Commande> obtenirCommande()
         {
             List<Commande> livraison = new List<Commande>();
+            
             lock (_lock)
             {
-                livraison.Add(uneCommande);
-                _commandes.Remove(uneCommande);
-                
-
-                for (int i = 0; i < _commandes.Count; i++)
+                if(_commandes.Count != 0)
                 {
-                    int depart;
-                    int arrive;
-                    if (i == 0)
+                    Position depart = _commandes[0].Destination;
+                    for (int i = 0; i < _commandes.Count; i++)
                     {
-                        depart = 0;
-                        arrive = Utilitaires.Utilitaires.calculerPosition(uneCommande.Destination.X, uneCommande.Destination.Y);
-                    }
-                    else
-                    {
-                        depart = Utilitaires.Utilitaires.calculerPosition(uneCommande.Destination.X, uneCommande.Destination.Y);
-                        arrive = Utilitaires.Utilitaires.calculerPosition(_commandes[i].Destination.X, _commandes[i].Destination.X);
-                        if ((Utilitaires.Utilitaires.calculerDistance(depart, arrive) < 10) && livraison.Count < 5)
+                        if (i == 0)
                         {
                             livraison.Add(_commandes[i]);
-                            _commandes.Remove(_commandes[i]);
-                            //lesCommandesPrepareListe.ElementAt(i).EstLivrée = true;
                         }
-
-
+                        else
+                        {
+                            int distance = Math.Abs(depart.X - _commandes[i].Destination.X) + Math.Abs(depart.Y - _commandes[i].Destination.Y);
+                            if ((distance < 10) && (livraison.Count < 5))
+                            {
+                                livraison.Add(_commandes[i]);
+                            }
+                        }
                     }
 
+                    for (int j = 0; j < livraison.Count; j++)
+                    {
+                        _commandes.Remove(livraison[j]);
+                    }
+                    
                 }
                 return livraison;
+
+
             }
         }
     }

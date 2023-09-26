@@ -13,10 +13,6 @@
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        public static int calculerDistance(int depart, int arrive)
-        {
-            return (arrive - depart);
-        }
 
 
 
