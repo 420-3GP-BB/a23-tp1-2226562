@@ -30,6 +30,6 @@
         // Nombre propres à la simulation
         public const int NOMBRE_COMMANDES = 80;
         public const int NOMBRE_CUISINIERS = 3;
-        public const int NOMBRE_LIVREURS = 3;
+        public const int NOMBRE_LIVREURS = 4;
     }
 }

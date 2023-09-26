@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace ThreadLivraison
 {
+    // creation de la classe Position
     internal class Position
     {
+        // l'attribut X qui represente la coordonnee cartesienne de la commande sur l'axe X
         public int X
         {
             get;
             set;
         }
 
+        // l'attribut Y qui represente la coordonnnee cartesienne de la commande sur l'axe Y
         public int Y 
         { 
             get; 
